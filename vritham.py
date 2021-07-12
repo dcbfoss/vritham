@@ -16,6 +16,7 @@ class ml_word:
             elif ord(self.word[index+1]) in sign:connected = True
             elif ord(self.word[index]) in [3405]:
                 connected = True if ((output[-1].count(chr(3405))<2)or(ord(self.word[index+1]) in [i for i in range(3375,3386)]))else False
+            elif ord(self.word[index]) in [3451]:connected = True if ord(self.word[index+1])==3377 else False
             else:connected = False
         return output
     
