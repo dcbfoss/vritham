@@ -17,12 +17,9 @@ class ml_word:
             elif ord(self.word[index]) in [3405]:connected = True if output[-1].count(chr(3405))<2 else False
             else:connected = False
         return output
-
-    def length(self):
-        return len(self.syllables())
     
     def laghuguru(self):
-        mathra = [None for i in range(self.length())]
+        mathra = [None for i in range(len(self))]
         Hswara_array = [chr(swara) for swara in [3334, 3336, 3338, 3343, 3347, 3348]]
         Hsign_array = [chr(sign) for sign in [3390, 3392, 3394, 3399, 3400, 3403, 3404, 3415, 3330, 3331]]
         chilu_array = [chr(chilu) for chilu in [3450, 3451, 3452, 3453, 3454]]
@@ -72,6 +69,12 @@ class ml_word:
     def __iter__(self):
         for char in self.syllables:
             yield char
+    def __len__(self):
+        return len(self.syllables())
+    
+    
 
-word = ml_word("തത്ത")
+word = ml_word("ദൈവസ്നേഹം വര്‍ണ്ണിച്ചീടാന്‍ വാക്കുകള്‍ പോരാ")
+print(word.syllables())
 print(word.laghuguru())
+print(len(word))
