@@ -68,7 +68,7 @@ class ml_word:
         return self.word
 
     def __iter__(self):
-        for char in self.syllables:
+        for char in self.syllables():
             yield char
     def __len__(self):
         return len(self.syllables())
