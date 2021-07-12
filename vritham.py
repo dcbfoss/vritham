@@ -14,7 +14,8 @@ class ml_word:
             else:output[-1] += self.word[index]
             if index+1 >= word_len:continue
             elif ord(self.word[index+1]) in sign:connected = True
-            elif ord(self.word[index]) in [3405]:connected = True if output[-1].count(chr(3405))<2 else False
+            elif ord(self.word[index]) in [3405]:
+                connected = True if ((output[-1].count(chr(3405))<2)or(ord(self.word[index+1]) in [i for i in range(3375,3386)]))else False
             else:connected = False
         return output
     
@@ -71,10 +72,4 @@ class ml_word:
             yield char
     def __len__(self):
         return len(self.syllables())
-    
-    
 
-word = ml_word("ദൈവസ്നേഹം വര്‍ണ്ണിച്ചീടാന്‍ വാക്കുകള്‍ പോരാ")
-print(word.syllables())
-print(word.laghuguru())
-print(len(word))
