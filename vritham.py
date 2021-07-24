@@ -15,14 +15,19 @@ class ml_word:
             if index+1 >= word_len:continue
             elif ord(self.word[index+1]) in sign:connected = True
             elif ord(self.word[index]) in [3405]:
+                nonsigncharacters = ""
+                for character in output[-1]:
+                    if ord(character) not in sign:nonsigncharacters = nonsigncharacters + character
                 if output[-1].count(chr(3405))<2:connected = True
                 elif (ord(self.word[index+1]) in [i for i in range(3375,3386)]):
-                    nonsigncharacters = ""
-                    for character in output[-1]:
-                        if ord(character) not in sign:nonsigncharacters = nonsigncharacters + character
                     if len(nonsigncharacters)<3:connected = True
                     else:connected = False
-                else:connected = False
+                else:
+                    connected = False
+                    for character in nonsigncharacters:
+                        if (ord(character) in [i for i in range(3375,3386)]):
+                            connected = True
+                            break
             elif ord(self.word[index]) in [3451]:connected = True if ord(self.word[index+1])==3377 else False
             else:connected = False
         return output
