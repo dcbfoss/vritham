@@ -8,7 +8,6 @@ src/kavyanarthaki/text.py
 src/kavyanarthaki.egg-info/PKG-INFO
 src/kavyanarthaki.egg-info/SOURCES.txt
 src/kavyanarthaki.egg-info/dependency_links.txt
-src/kavyanarthaki.egg-info/requires.txt
 src/kavyanarthaki.egg-info/top_level.txt
 src/kavyanarthaki/data/ml_data.csv
 src/kavyanarthaki/data/sa_data.csv

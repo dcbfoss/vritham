@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='kavyanarthaki',
-    version='0.1.5',
+    version='0.1.6',
     license='MIT',
     author="Prof. Achuthsankar S Nair, Vinod M P",
     author_email='sankar.achuth@gmail.com, mpvinod625@gmail.com',
@@ -16,5 +16,5 @@ setup(
     package_dir={'': 'src'},
     url='https://github.com/dcbfoss/vritham',
     keywords='kavyanarthaki malayalam meter analysis',
-    install_requires=['csv', 'codecs', 'requests'],
+    install_requires=[],
 )
