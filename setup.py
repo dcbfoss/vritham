@@ -16,5 +16,5 @@ setup(
     package_dir={'': 'src'},
     url='https://github.com/dcbfoss/vritham',
     keywords='kavyanarthaki malayalam meter analysis',
-    install_requires=['csv', 'codecs', 'requests','pkg_resources'],
+    install_requires=['csv', 'codecs', 'requests'],
 )
