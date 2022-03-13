@@ -52,6 +52,31 @@ class ml:
             if ord(syllable[-1])==3405:output[index]='-' # convert character end in chandrakala into -                                                                                 
         if len(output)>1 and output[-1]=='-':output[-2]='G'
         return output
+    
+    def __getitem__(self,index):
+        return ml(''.join(self.syllables()[index]))
+        
+    def __eq__(self,otherobject):
+        if isinstance(otherobject, ml):
+            if self.text == otherobject.text:return True
+        elif isinstance(otherobject,str):
+            if self.text == otherobject:return True
+        else:return False
+                  
+    def __mul__(self,num):
+        return ml(self.text*num)
+                  
+    def __rmul__(self,num):
+        return ml(self.text*num)
+    
+    def __add__(self,otherobject):
+        if isinstance(otherobject, ml):return ml(self.text + otherobject.text)
+        elif isinstance(otherobject,str):return ml(self.text + otherobject)
+        else: return ml(self.text)
+    
+    def __radd__(self,otherobject):
+        if isinstance(otherobject,str):return ml(otherobject + self.text)
+        else: return ml(self.text)
 
     def __str__(self):
         return self.text

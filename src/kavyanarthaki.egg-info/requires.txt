@@ -1,0 +1,4 @@
+csv
+codecs
+requests
+pkg_resources
