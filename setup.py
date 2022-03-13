@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='kavyanarthaki',
-    version='0.1.2',
+    version='0.1.5',
     license='MIT',
     author="Prof. Achuthsankar S Nair, Vinod M P",
     author_email='sankar.achuth@gmail.com, mpvinod625@gmail.com',
