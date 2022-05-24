@@ -3,10 +3,7 @@ import pkg_resources
 import csv, codecs, requests
 
 class data:
-    def __init__(self,selected='sanskrit'):
-        self.selected = selected
-        if self.selected.lower() == 'malayalam':self.selected = 'malayalam'
-        else:self.selected = 'sanskrit'
+    def __init__(self):
         self.data = []
         self.dictionary = {}
         
@@ -17,8 +14,7 @@ class data:
     
     def load(self,filelocation=''):
         if filelocation == '':
-            if self.selected == 'sanskrit':filelocation = 'data/sa_data.csv'
-            else:filelocation = 'data/ml_data.csv'
+            filelocation = 'data/data.csv'
             buffered_reader = pkg_resources.resource_stream(__name__,filelocation)
             csvfile = csv.reader(codecs.iterdecode(buffered_reader,'UTF-8'))
             self.data = []

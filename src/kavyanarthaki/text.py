@@ -52,6 +52,14 @@ class ml:
             if ord(syllable[-1])==3405:output[index]='-' # convert character end in chandrakala into -                                                                                 
         if len(output)>1 and output[-1]=='-':output[-2]='G'
         return output
+
+    def nochillu(self):
+        lg = self.laghuguru()
+        sb = self.syllables()
+        output = []
+        for index, letter in enumerate(sb):
+            if not(lg[index] == '-'):output.append(letter)
+        return ml(''.join(output))
     
     def __getitem__(self,index):
         return ml(''.join(self.syllables()[index]))

@@ -1,5 +1,6 @@
 from kavyanarthaki.text import ml
 from kavyanarthaki.db import data
+from kavyanarthaki.vritham import predict, _compute
 
 def gl(text):
     if isinstance(text, ml):text = text.text
@@ -10,15 +11,7 @@ def syllables(text):
     return ml(text).syllables()
  
 def compute(akshara_pattern): # calculate maathra input NJYSBMTRGL string/list
-    if isinstance(akshara_pattern, list):
-        try:akshara_pattern=''.join(akshara_pattern)
-        except:return -1
-    akshara_pattern=akshara_pattern.upper()
-    Maathra_table = {'N':3,'J':4,'Y':5,'S':4,'B':4,'M':6,'T':5,'R':5,'G':2,'L':1}
-    maathra = 0
-    for akshara in akshara_pattern:
-        maathra += Maathra_table.get(akshara,0)
-    return maathra
+    return _compute(akshara_pattern)
  
 def convertgl(text): # get NJYSBMTRGL from GL string
     if isinstance(text, list):
@@ -51,7 +44,16 @@ def converttogl(string): # get GL text from NJYSBMTRGL string
         output+=gettriplet(character)
     return output
 
-def check(sequence,database='sanskrit'):
-    db = data(database)
+def check(sequence):
+    db = data()
     db.load()
     return db.check(sequence)
+
+def sanskritvritham(text):
+    output = check(convertgl(gl(text)))
+    if isinstance(output,list):return "വൃത്ത പ്രവചനം: "+output[0]+" (ലക്ഷണം: "+output[1]+", "+output[2]+")"
+    else:return "വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല"
+
+def bhashavritham(*lines):
+    return predict().bhashavritham(lines)
+    
