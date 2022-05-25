@@ -44,16 +44,16 @@ def converttogl(string): # get GL text from NJYSBMTRGL string
         output+=gettriplet(character)
     return output
 
-def check(sequence):
+def check(sequence): # check NJYSBMTRGL string in sanskrit database
     db = data()
     db.load()
     return db.check(sequence)
 
-def sanskritvritham(text):
+def sanskritvritham(text): # check poem text GL in sanskrit database
     output = check(convertgl(gl(text)))
     if isinstance(output,list):return "വൃത്ത പ്രവചനം: "+output[0]+" (ലക്ഷണം: "+output[1]+", "+output[2]+")"
-    else:return "വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല"
+    else:return "വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല "+" (ലക്ഷണം: കണ്ടെത്താനായില്ല, -)"
 
-def bhashavritham(*lines):
+def bhashavritham(*lines): # check poem lines in bhasha vritham
     return predict().bhashavritham(lines)
     
