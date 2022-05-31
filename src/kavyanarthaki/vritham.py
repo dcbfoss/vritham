@@ -51,7 +51,7 @@ class predict:
         if(((l1==16) and (m1<=32)) and ((l2==13) and (m2<=26))):prediction="നതോന്നത"
         if(((l1==12) and (m1==19 or m1==20)) and ((l2==12) and (m2==19 or m2==20))):prediction="കാകളി"
         if(((l1==14) and (m1<=20)) and ((l2==14) and (m2<=20))):prediction="മണികാഞ്ചി"
-        if(((l1==16) and (m1<=20)) and ((l2==16) and (m2<=20))):prediction="കളകാഞ്ചി"
+        if(((l1==16) and (m1<=20)) and (((l2==16)or(l2==18)) and (m2<=20))):prediction="കളകാഞ്ചി"
         if(((l1==12) and (m1<20)) and ((l2==8) and (m2==14 or m2==13))):prediction="മരകാകളി"
         if(((l1==11) and (m1<=18)) and ((l2==11) and (m2<=18))):prediction="പാന"
         if(((l1==12) and (m1<=18)) and ((l2==10) and (m2==16 or m2==17))):prediction="മഞ്ജരി"
@@ -59,5 +59,5 @@ class predict:
         if((l1==14) and (l2==14)): prediction="കേക"
         if((l1==12) and (l2==10)): prediction="മതിലേഖ"
         if((l1==10) and (l2==10)): prediction="മാവേലി"
-        return "വൃത്ത പ്രവചനം: "+prediction
+        return "വൃത്ത പ്രവചനം: "+prediction+" (L1: "+str(l1)+", L2:"+str(l2)+", M1:"+str(m1)+",M2:"+str(m2)+")"
     
