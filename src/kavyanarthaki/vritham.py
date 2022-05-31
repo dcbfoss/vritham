@@ -59,5 +59,6 @@ class predict:
         if((l1==14) and (l2==14)): prediction="കേക"
         if((l1==12) and (l2==10)): prediction="മതിലേഖ"
         if((l1==10) and (l2==10)): prediction="മാവേലി"
+        if prediction == '':return "വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല (L1: "+str(l1)+", L2:"+str(l2)+", M1:"+str(m1)+",M2:"+str(m2)+")"
         return "വൃത്ത പ്രവചനം: "+prediction+" (L1: "+str(l1)+", L2:"+str(l2)+", M1:"+str(m1)+",M2:"+str(m2)+")"
     

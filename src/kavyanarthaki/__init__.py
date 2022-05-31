@@ -63,15 +63,15 @@ def FindVritham_Sanskrit(*lines,flag=0): # check poem text GL in sanskrit databa
                 if len(line.rstrip())>0:
                     dat.append(line.rstrip())
     for line in dat:
-        output.append(db.check(ConvertGLToGanams(gl(text))))
+        output.append(db.check(ConvertGLToGanams(gl(line))))
     if len(output)>1:
         form = []
         for entry in output:
-            if isinstance(entry,list):form.append("വൃത്ത പ്രവചനം: "+output[0]+" (ലക്ഷണം: "+output[1]+")")
+            if isinstance(entry,list):form.append("വൃത്ത പ്രവചനം: "+entry[0]+" (ലക്ഷണം: "+entry[1]+")")
             else:form.append("വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല (ലക്ഷണം: കണ്ടെത്താനായില്ല)")
         return form
     else:
-        if isinstance(entry,list):return "വൃത്ത പ്രവചനം: "+output[0]+" (ലക്ഷണം: "+output[1]+")"
+        if isinstance(output[0],list):return "വൃത്ത പ്രവചനം: "+output[0][0]+" (ലക്ഷണം: "+output[0][1]+")"
         else:return "വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല (ലക്ഷണം: കണ്ടെത്താനായില്ല)"
 
 def FindVritham_Bhasha(*lines,flag=0): # check poem lines in bhasha vritham
@@ -109,12 +109,14 @@ def FindVritham_Any(*lines,flag=0):
     if isinstance(sanskrit_output,list):
         for i in sanskrit_output:
             if i==errortext:notfound = True
-    else:if sanskrit_output==errortext:notfound = True
-    if nofound:return FindVritham_Bhasha(*dat)
+    else:
+        if sanskrit_output==errortext:notfound = True
+    if notfound:return FindVritham_Bhasha(*dat)
     else:return sanskrit_output
             
 
-def ConvertToVaythari(string):
+def ConvertToVaythari(line):
+    string = "".join(gl(line))
     def croptext(text):
         out = []
         while len(text)>0:
