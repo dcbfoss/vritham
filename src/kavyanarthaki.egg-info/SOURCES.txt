@@ -11,3 +11,4 @@ src/kavyanarthaki.egg-info/SOURCES.txt
 src/kavyanarthaki.egg-info/dependency_links.txt
 src/kavyanarthaki.egg-info/top_level.txt
 src/kavyanarthaki/data/data.csv
+src/kavyanarthaki/data/vritham.matrix
