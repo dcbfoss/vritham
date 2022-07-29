@@ -1,6 +1,6 @@
 from kavyanarthaki.text import ml
 from kavyanarthaki.db import data
-from kavyanarthaki.vritham import predict, _compute
+from kavyanarthaki.vritham import predict, _compute, _TripletGanams
 
 
 def syllables(text):
@@ -17,11 +17,6 @@ def MathraCount(akshara_pattern): # calculate maathra input NJYSBMTRGL string/li
 def LetterCount(text):
     return len(ml(text))
 
-def TripletGanams(character): # get GL triplet from any single NJYSBMTRGL character
-    valid = ['N','S','J','Y','B','R','T','M']
-    if character.upper() not in valid:return character.upper()
-    else:return str('{0:03b}'.format(valid.index(character.upper()))).replace('0','L').replace('1','G')
-
 def ConvertGanamsToGL(string): # get GL text from NJYSBMTRGL string
     if isinstance(string, list):
         try:string=''.join(string)
@@ -31,7 +26,7 @@ def ConvertGanamsToGL(string): # get GL text from NJYSBMTRGL string
         except:return -1
     output = ''
     for character in string:
-        output+=TripletGanams(character)
+        output+=_TripletGanams(character)
     return output
  
 def ConvertGLToGanams(text): # get NJYSBMTRGL from GL string
@@ -48,8 +43,7 @@ def ConvertGLToGanams(text): # get NJYSBMTRGL from GL string
         else:output += text[i:i+3].upper()
     return output
 
-def FindVritham_Sanskrit(*lines,flag=0): # check poem text GL in sanskrit database
-    db = data();db.load()
+def FindVritham_Sanskrit(*lines,flag=0,threshold=0.5): # check poem text GL in sanskrit database
     dat = [];output = []
     if flag==0:
         for line in lines:
@@ -62,17 +56,11 @@ def FindVritham_Sanskrit(*lines,flag=0): # check poem text GL in sanskrit databa
             for line in poemfile:
                 if len(line.rstrip())>0:
                     dat.append(line.rstrip())
+
+    x = predict()
     for line in dat:
-        output.append(db.check(ConvertGLToGanams(gl(line))))
-    if len(output)>1:
-        form = []
-        for entry in output:
-            if isinstance(entry,list):form.append("വൃത്ത പ്രവചനം: "+entry[0]+" (ലക്ഷണം: "+entry[1]+")")
-            else:form.append("വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല (ലക്ഷണം: കണ്ടെത്താനായില്ല)")
-        return form
-    else:
-        if isinstance(output[0],list):return "വൃത്ത പ്രവചനം: "+output[0][0]+" (ലക്ഷണം: "+output[0][1]+")"
-        else:return "വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല (ലക്ഷണം: കണ്ടെത്താനായില്ല)"
+        output.append(x.sanskritvritham(line,threshold=threshold))
+    return output
 
 def FindVritham_Bhasha(*lines,flag=0): # check poem lines in bhasha vritham
     dat = []

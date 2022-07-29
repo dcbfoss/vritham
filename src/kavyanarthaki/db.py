@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+
+# this code is mostly unused at this stage. But kept for future reference
 import pkg_resources
 import csv, codecs, requests
 
