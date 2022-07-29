@@ -1,0 +1,67 @@
+<html lang="ml">
+    <head>
+    <title>കാവ്യനർത്തകി</title>
+     <meta charset="UTF-8">
+     <link rel="stylesheet" href="https://kavyanarthaki.in/assets/kavya_style.css">
+    </head>
+    <body>
+        <script>
+        function finddata(){
+            var operation = 'gl';
+            if (document.getElementById('gl').checked){
+                operation = 'gl';
+            }else if (document.getElementById('bv').checked){
+                operation = 'bv';
+            }else if (document.getElementById('sv').checked){
+                operation = 'sv';
+            }else if (document.getElementById('vt').checked){
+                operation = 'vt';
+            }else if (document.getElementById('sm').checked){
+                operation = 'sm';
+            }
+            else {
+                operation = 'gl';
+            }
+            var text = document.getElementById('inputarea').value;
+            const form = document.createElement('form');
+            form.method = "POST";
+            form.action = "http://kavyanarthaki.in/cgi-bin/test.py";
+            const op = document.createElement('input');
+            op.type = 'hidden';op.name = "analysis";op.value = operation;
+            const dt = document.createElement('input');
+            dt.type = 'hidden';dt.name = "data";dt.value = text;
+            form.appendChild(op);form.appendChild(dt);
+            document.body.appendChild(form);form.submit();
+            form.remove();
+        }
+        </script>
+        <div class="page-header">
+                <img class="logo-image" src="http://kavyanarthaki.in/assets/Logo_of_University_of_Kerala.png" alt="UOK">
+                <div class="header-text">
+                <h1>കാവ്യനർത്തകി</h1>
+                <h3>(Based on kavyanarthaki Python Package for Malayalam Meters)</h3>
+                <h5>Developed by Machine Learning Team of Department of Computational Biology and Bioinformatics, University of Kerala.</h5>
+            </div></div>
+        <center>
+                    
+        <a href="https://colab.research.google.com/drive/1BXRAZ-E5SckC6094gU2XWFuXLxnbJbP7?usp=sharing"><img data-canonical-src="https://kavyanarthaki.in/assets/colab-badge.svg" alt="Open In Colab" src="https://kavyanarthaki.in/assets/colab-badge2.svg"></a>
+
+            <div id="maincontainer">
+            <div class="card-mainpage">ഇവിടെ ഈരടി / വരികൾ എഴുതുക<br><textarea class="textbox" id="inputarea">അങ്കണ തൈമാവിൽ നിന്നാദ്യത്തെ പഴം വീഴ്കെ
+അമ്മതൻ നേത്രത്തിൽ നിന്നുതിർന്നൂ ചുടുകണ്ണീർ</textarea></div>
+            <br><input type=radio id="gl" value="gl" name="process" checked>
+            <label for='gl'>ഗുരു ലഘു</label>
+            <input type=radio id="bv" value="bv" name="process">
+            <label for='bv'>ഭാഷാ വൃത്തം</label>
+            <input type=radio id="sv" value="sv" name="process">
+            <label for='sv'>സംസ്‌കൃത വൃത്തം</label>
+            <input type=radio id="vt" value="vt" name="process">
+            <label for='vt'>വായ്ത്താരി </label>
+            <input type=radio id="sm" value="sm" name="process">
+            <label for='sm'>സംഗ്രഹം</label>
+            <button id="button1" onclick="finddata()">കണ്ടെത്തുക</button>
+            </div>
+        </center>
+
+    </body>
+</html>

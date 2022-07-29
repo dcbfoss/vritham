@@ -43,7 +43,8 @@ def ConvertGLToGanams(text): # get NJYSBMTRGL from GL string
         else:output += text[i:i+3].upper()
     return output
 
-def FindVritham_Sanskrit(*lines,flag=0,threshold=0.5): # check poem text GL in sanskrit database
+def FindVritham_Sanskrit(*lines,flag=0): # check poem text GL in sanskrit database
+    db = data();db.load()
     dat = [];output = []
     if flag==0:
         for line in lines:
@@ -56,11 +57,17 @@ def FindVritham_Sanskrit(*lines,flag=0,threshold=0.5): # check poem text GL in s
             for line in poemfile:
                 if len(line.rstrip())>0:
                     dat.append(line.rstrip())
-
-    x = predict()
     for line in dat:
-        output.append(x.sanskritvritham(line,threshold=threshold))
-    return output
+        output.append(db.check(ConvertGLToGanams(gl(line))))
+    if len(output)>1:
+        form = []
+        for entry in output:
+            if isinstance(entry,list):form.append("വൃത്ത പ്രവചനം: "+entry[0]+" (ലക്ഷണം: "+entry[1]+")")
+            else:form.append("വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല (ലക്ഷണം: കണ്ടെത്താനായില്ല)")
+        return form
+    else:
+        if isinstance(output[0],list):return "വൃത്ത പ്രവചനം: "+output[0][0]+" (ലക്ഷണം: "+output[0][1]+")"
+        else:return "വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല (ലക്ഷണം: കണ്ടെത്താനായില്ല)"
 
 def FindVritham_Bhasha(*lines,flag=0): # check poem lines in bhasha vritham
     dat = []

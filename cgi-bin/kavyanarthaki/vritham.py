@@ -1,7 +1,5 @@
-#!/usr/bin/python3
-from kavyanarthaki.text import ml
 import pkg_resources
-import csv, codecs, difflib
+import csv, codecs, difflib, requests
 
 def _compute(akshara_pattern): # calculate maathra input NJYSBMTRGL string/list
     if isinstance(akshara_pattern, list):
@@ -18,6 +16,148 @@ def _TripletGanams(character): # get GL triplet from any single NJYSBMTRGL chara
     valid = ['N','S','J','Y','B','R','T','M']
     if character.upper() not in valid:return character.upper()
     else:return str('{0:03b}'.format(valid.index(character.upper()))).replace('0','L').replace('1','G')
+    
+# ----------------------------------------------------------------------------- db.py
+  
+class data:
+    def __init__(self):
+        self.data = []
+        self.dictionary = {}
+        
+    def update(self):
+        self.dictionary = {}
+        for entry in self.data:
+            self.dictionary[str(entry[-1]).upper()] = entry
+    
+    def load(self,filelocation=''):
+        if filelocation == '':
+            filelocation = 'data/data.csv'
+            buffered_reader = pkg_resources.resource_stream(__name__,filelocation)
+            csvfile = csv.reader(codecs.iterdecode(buffered_reader,'UTF-8'))
+            self.data = []
+            for row in csvfile:
+                self.data.append(row)
+        else:
+            with open(filelocation, 'r', encoding='UTF-8') as csvfile:
+                csvreader = csv.reader(csvfile)
+                self.data = []
+                for row in csvfile:
+                    self.data.append(row.rstrip().split(sep=','))
+        self.update()
+            
+    def loadurl(self,url):
+        webresponse = requests.get(url)
+        csvfile = codecs.iterdecode(webresponse.iter_lines(), 'UTF-8')
+        csvreader = csv.reader(csvfile)
+        self.data = []
+        for row in csvreader:
+            self.data.append(row)
+        self.update()
+    
+    def check(self,sequence):
+        return self.dictionary.get(sequence.upper(),'No Entry Found')
+    
+# ----------------------------------------------------------------------------- text.py
+
+class ml:
+    def __init__(self, text):
+        self.text = text
+
+    def syllables(self):
+        sign = [3330, 3331, 3390, 3391, 3392, 3393, 3394, 3395, 3396,
+                3398, 3399, 3400, 3402, 3403, 3404, 3405, 3415]
+        output = [];connected = False;word_len = len(self.text)
+        for index in range(word_len):
+            if ord(self.text[index])<3330 or ord(self.text[index])>3455:connected = False;continue
+            if not connected:output.append(self.text[index])
+            else:output[-1] += self.text[index]
+            if index+1 >= word_len:continue
+            elif ord(self.text[index+1]) in sign:connected = True
+            elif ord(self.text[index]) in [3405]:
+                nonsigncharacters = ""
+                for character in output[-1]:
+                    if ord(character) not in sign:nonsigncharacters = nonsigncharacters + character
+                if output[-1].count(chr(3405))<2:connected = True
+                elif (ord(self.text[index+1]) in [i for i in range(3375,3386)]):
+                    if len(nonsigncharacters)<3:connected = True
+                    else:connected = False
+                else:
+                    connected = False
+                    for character in nonsigncharacters:
+                        if (ord(character) in [i for i in range(3375,3386)]):
+                            connected = True
+                            break
+            elif ord(self.text[index]) in [3451]:connected = True if ord(self.text[index+1])==3377 else False
+            else:connected = False
+        return output
+
+    def laghuguru(self):
+        def nonsignchars(syllable):
+            signs = (3330, 3331, 3390, 3391, 3392, 3393, 3394, 3395, 3396,3398, 3399, 3400, 3402, 3403, 3404, 3405, 3415)
+            output = [s for s in syllable if ord(s) not in signs]
+            return ''.join(output)
+        syllables = self.syllables()
+        output = ['L' for syllable in syllables]
+        chillu = (3450, 3451, 3452, 3453, 3454)
+        g_characters = (3334, 3336, 3338, 3343, 3347, 3348, 3390, 3392, 
+                        3394, 3399, 3400, 3403, 3404, 3415, 3330, 3331)
+        for index, syllable in enumerate(syllables):
+            if ord(syllable[-1]) in chillu:output[index] = '-'
+            elif ord(syllable[-1]) in g_characters:output[index] = 'G'
+            if len(nonsignchars(syllable))>=2 and index>0:
+                if output[index-1]=='-' and index-2>=0:output[index-2]='G'
+                elif output[index-1]=='L':output[index-1]='G'
+                else:pass
+            if ord(syllable[-1])==3405:output[index]='-' # convert character end in chandrakala into -                                                                                 
+        if len(output)>1 and output[-1]=='-':output[-2]='G'
+        return output
+
+    def nochillu(self):
+        lg = self.laghuguru()
+        sb = self.syllables()
+        output = []
+        for index, letter in enumerate(sb):
+            if not(lg[index] == '-'):output.append(letter)
+        return ml(''.join(output))
+    
+    def __getitem__(self,index):
+        return ml(''.join(self.syllables()[index]))
+        
+    def __eq__(self,otherobject):
+        if isinstance(otherobject, ml):
+            if self.text == otherobject.text:return True
+        elif isinstance(otherobject,str):
+            if self.text == otherobject:return True
+        else:return False
+                  
+    def __mul__(self,num):
+        return ml(self.text*num)
+                  
+    def __rmul__(self,num):
+        return ml(self.text*num)
+    
+    def __add__(self,otherobject):
+        if isinstance(otherobject, ml):return ml(self.text + otherobject.text)
+        elif isinstance(otherobject,str):return ml(self.text + otherobject)
+        else: return ml(self.text)
+    
+    def __radd__(self,otherobject):
+        if isinstance(otherobject,str):return ml(otherobject + self.text)
+        else: return ml(self.text)
+
+    def __str__(self):
+        return self.text
+
+    def __repr__(self):
+        return self.text
+
+    def __iter__(self):
+        for syllable in self.syllables():
+            yield syllable
+    def __len__(self):
+        return len(self.syllables())
+        
+# ----------------------------------------------------------------------------- vritham.py
 
 class matrix:
     def __init__(self,filename="data/vritham.matrix"):
@@ -301,4 +441,143 @@ class predict:
             if out[x]>=0.9:valid[x]=out[x]
         if len(valid.keys())<=0:valid["കണ്ടെത്താനായില്ല"] = 0.0
         return "വൃത്ത പ്രവചനം: "+"/".join(valid.keys())+'||'+"/".join([str(round(i,3)*100)+' %' for i in valid.values()])
-    
+ 
+
+# ----------------------------------------------------------------------------- __init__.py
+  
+def syllables(text):
+    if isinstance(text, ml):text = text.text
+    return ml(text).syllables()
+
+def gl(text):
+    if isinstance(text, ml):text = text.text
+    return ml(text).laghuguru()
+ 
+def MathraCount(akshara_pattern): # calculate maathra input NJYSBMTRGL string/list
+    return _compute(akshara_pattern)
+
+def LetterCount(text):
+    return len(ml(text))
+
+def ConvertGanamsToGL(string): # get GL text from NJYSBMTRGL string
+    if isinstance(string, list):
+        try:string=''.join(string)
+        except:return -1
+    if isinstance(string, tuple):
+        try:string=''.join(list(string))
+        except:return -1
+    output = ''
+    for character in string:
+        output+=_TripletGanams(character)
+    return output
+ 
+def ConvertGLToGanams(text): # get NJYSBMTRGL from GL string
+    if isinstance(text, list):
+        try:text=''.join(text)
+        except:return -1
+    if isinstance(text, tuple):
+        try:text=''.join(list(text))
+        except:return -1
+    triplets = {'LLL':'N','LLG':'S','LGL':'J','LGG':'Y','GLL':'B','GLG':'R','GGL':'T','GGG':'M'}
+    output = ''
+    for i in range(0,len(text),3):
+        if len(text[i:i+3]) == 3:output += triplets.get(text[i:i+3].upper(),'')
+        else:output += text[i:i+3].upper()
+    return output
+
+def FindVritham_Sanskrit(*lines,flag=0): # check poem text GL in sanskrit database
+    db = data();db.load()
+    dat = [];output = []
+    if flag==0:
+        for line in lines:
+            if isinstance(line,tuple) or isinstance(line,list):
+                for j in line:
+                    dat.append(j)
+            else:dat.append(line)
+    elif flag==1:
+        with open(lines[0],'r') as poemfile:
+            for line in poemfile:
+                if len(line.rstrip())>0:
+                    dat.append(line.rstrip())
+    for line in dat:
+        output.append(db.check(ConvertGLToGanams(gl(line))))
+    if len(output)>1:
+        form = []
+        for entry in output:
+            if isinstance(entry,list):form.append("വൃത്ത പ്രവചനം: "+entry[0]+" (ലക്ഷണം: "+entry[1]+")")
+            else:form.append("വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല (ലക്ഷണം: കണ്ടെത്താനായില്ല)")
+        return form
+    else:
+        if isinstance(output[0],list):return "വൃത്ത പ്രവചനം: "+output[0][0]+" (ലക്ഷണം: "+output[0][1]+")"
+        else:return "വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല (ലക്ഷണം: കണ്ടെത്താനായില്ല)"
+
+def FindVritham_Bhasha(*lines,flag=0): # check poem lines in bhasha vritham
+    dat = []
+    if flag==0:
+        for line in lines:
+            if isinstance(line,tuple) or isinstance(line,list):
+                for j in line:
+                    dat.append(j)
+            else:dat.append(line)
+    elif flag==1:
+        with open(lines[0],'r') as poemfile:
+            for line in poemfile:
+                if len(line.rstrip())>0:
+                    dat.append(line.rstrip())
+    else:pass
+    return predict().bhashavritham(dat)
+
+def FindVritham_Any(*lines,flag=0):
+    dat = []
+    if flag==0:
+        for line in lines:
+            if isinstance(line,tuple) or isinstance(line,list):
+                for j in line:
+                    dat.append(j)
+            else:dat.append(line)
+    elif flag==1:
+        with open(lines[0],'r') as poemfile:
+            for line in poemfile:
+                if len(line.rstrip())>0:
+                    dat.append(line.rstrip())
+    else:pass
+    sanskrit_output = FindVritham_Sanskrit(*dat)
+    notfound = False; errortext = "വൃത്ത പ്രവചനം: കണ്ടെത്താനായില്ല (ലക്ഷണം: കണ്ടെത്താനായില്ല)"
+    if isinstance(sanskrit_output,list):
+        for i in sanskrit_output:
+            if i==errortext:notfound = True
+    else:
+        if sanskrit_output==errortext:notfound = True
+    if notfound:return FindVritham_Bhasha(*dat)
+    else:return sanskrit_output
+            
+
+def ConvertToVaythari(line):
+    string = "".join(gl(line))
+    def croptext(text):
+        out = []
+        while len(text)>0:
+            if len(text)>5:out.append(text[0:5]);text = text[5:]
+            else:out.append(text);text = ""
+        return out
+    def splitter(text):
+        o = []
+        for i in text.upper():
+            if i == 'G':o.append('G')
+            if i == 'L':
+                if len(o)>0:
+                    if 'G' in o[-1]:o.append('L')
+                    else:
+                        if len(o[-1])>=5:o.append('L')
+                        else:o[-1] += 'L'
+                else:o.append('L')
+        return o
+    l_sounds = {'G':"ധീം",'L':"ത",'LL':"തക",'LLL':"തകിട",'LLLL':"തകധിമി",'LLLLL':"തകതകിട"}    
+    if isinstance(string,list):string="".join(string)
+    string = string.upper()
+    output = []
+    if 'G' in string:dat = splitter(string)
+    else:dat = croptext(string)
+    for i in dat:
+        output.append(l_sounds[i])
+    return " ".join(output)
