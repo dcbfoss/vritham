@@ -3,16 +3,26 @@ import cgi, sys, codecs
 import cgitb  
 import pkg_resources
 import csv, codecs, difflib
+from datetime import date
 
 cgitb.enable(display=0)
 print ("Content-type:text/html\r\n")
 print('<html lang="ml"><head>')
 print('<meta charset="UTF-8">')
+print('<link rel="icon" type="image/x-icon" href="https://kavyanarthaki.in/assets/logo.ico">')
 print('<link rel="stylesheet" href="https://kavyanarthaki.in/assets/kavya_style.css">')
 print('<title>Kavyanarthaki</title></head><body>')
 
 process = False;text = False;
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+
+def writelog(inputtext):
+    today = date.today()
+    with open('data/kavya.log','a', encoding='utf-8') as logfile:
+        logfile.write(str(today)+'----\n\n')
+        for text in inputtext:
+            logfile.write(text+'\n')
+        logfile.write('----\n\n')
 
 # --------------------------------------------------------------------------
 
@@ -238,6 +248,22 @@ class matrix:
             text = text.rstrip()
             patterns = [i for i in text.replace('{','').split('}') if not(i=='')]
             return patterns
+            
+        def checkgroups(gl,rule,char):
+            if char=='*':return True
+            int_rule = [int(i) for i in rule if not(i=='')]
+            index = 0; count = 0; groups = []
+            if len(gl) == sum(int_rule):
+                groups = [[] for i in int_rule]
+                for i in range(sum(int_rule)):
+                    count = count + 1
+                    groups[index].append(gl[i].upper())
+                    if count >= int_rule[index]:
+                        count = 0; index = index + 1
+                for i in groups:
+                    if not(char.upper() in i):return False
+                return True
+            else:return False
 
         def siteData(data,gl):
             if data[2]=='*':linenumbers = [i for i in range(len(gl))] # process all lines
@@ -249,32 +275,37 @@ class matrix:
                 if index in linenumbers:
                     if ((data[1]=='*')or(data[1]=='')):linedata.append(True) # any character
                     else:
-                        if ((data[0]=='*')or(data[0]=='')): # implies all position in a line
-                            for character in entry:
-                                if not(character.upper()==data[1].upper()):linedata.append(False);break
-                            linedata.append(True)
-                        elif data[0].upper()=='O':
-                            positions = [i for i in range(len(gl)) if (i%2==0)] # process odd lines
-                            for pos, char in enumerate(entry):
-                                if pos in positions:
-                                    if not(char.upper()==data[1].upper()):linedata.append(False);break
-                            linedata.append(True)
-                        elif data[0].upper()=='E':
-                            positions = [i for i in range(len(gl)) if not(i%2==0)] # process even lines
-                            for pos, char in enumerate(entry):
-                                if pos in positions:
-                                    if not(char.upper()==data[1].upper()):linedata.append(False);break
-                            linedata.append(True)
+                        if ('[' in data[0]):
+                            rule = data[0].replace('[','').replace(']','').split('-')
+                            out_p = checkgroups(entry,rule,data[1])
+                            linedata.append(out_p)
                         else:
-                            positions = [int(i) for i in data[0].split('&') if not(i=='')]
-                            pos_pos = [i-1 for i in positions if (i>0)]
-                            neg_pos = [i for i in positions if (i < 0)]
-                            for pos, char in enumerate(entry):
-                                if pos in pos_pos:
-                                    if not(char.upper()==data[1].upper()):linedata.append(False);break # positives are checked
-                            for n_p in neg_pos:
-                                if not(entry[n_p].upper()==data[1].upper()):linedata.append(False) # negatives are checked
-                            linedata.append(True)
+                            if ((data[0]=='*')or(data[0]=='')): # implies all position in a line
+                                for character in entry:
+                                    if not(character.upper()==data[1].upper()):linedata.append(False);break
+                                linedata.append(True)
+                            elif data[0].upper()=='O':
+                                positions = [i for i in range(len(gl)) if (i%2==0)] # process odd lines
+                                for pos, char in enumerate(entry):
+                                    if pos in positions:
+                                        if not(char.upper()==data[1].upper()):linedata.append(False);break
+                                linedata.append(True)
+                            elif data[0].upper()=='E':
+                                positions = [i for i in range(len(gl)) if not(i%2==0)] # process even lines
+                                for pos, char in enumerate(entry):
+                                    if pos in positions:
+                                        if not(char.upper()==data[1].upper()):linedata.append(False);break
+                                linedata.append(True)
+                            else:
+                                positions = [int(i) for i in data[0].split('&') if not(i=='')]
+                                pos_pos = [i-1 for i in positions if (i>0)]
+                                neg_pos = [i for i in positions if (i < 0)]
+                                for pos, char in enumerate(entry):
+                                    if pos in pos_pos:
+                                        if not(char.upper()==data[1].upper()):linedata.append(False);break # positives are checked
+                                for n_p in neg_pos:
+                                    if not(entry[n_p].upper()==data[1].upper()):linedata.append(False) # negatives are checked
+                                linedata.append(True)
             if (False in linedata):return False                 #     ---------------------------------- THIS IS WHERE 'AND' COMES IN THE CODE
             return True
 
@@ -592,6 +623,7 @@ def ConvertToVaythari(line):
 # --------------------------------------------------------------------------
 
 def writelgoutput(text, output):
+    print('<center><div id="page-sub-heading">ഗുരു / ലഘു നിർണ്ണയം </div></center>')
     print('<table>')
     for lindex, line in enumerate(text):
         print('<tr class="tableindex'+str((lindex%2)+1)+'">')
@@ -601,15 +633,17 @@ def writelgoutput(text, output):
     print('</table>')
 
 def writebvoutput(text,output):
+    print('<center><div id="page-sub-heading">ഭാഷാവൃത്ത  നിർണ്ണയം </div></center>')
     output = output.replace('വൃത്ത പ്രവചനം: ','')
     name, data = output.split(' (')
     print('<div class="prediction">'+name+"</div>")
-    """
+    print('<center><table border="1" class="sum_tble">')
     for i in text:
-        print('<div class="entry-header">'+i+"</div>")
-    """
+        print('<tr><td id="sum_tble">',i,'</td></tr>')
+    print('</center></table>')
 
 def writesvoutput(texts):
+    print('<center><div id="page-sub-heading">ഏകദേശ സാമ്യം  (സംസ്‌കൃതവൃത്തങ്ങൾ മാത്രം) </div></center>')
     values = {}
     x = predict()
     for j in texts:
@@ -621,6 +655,7 @@ def writesvoutput(texts):
        for i in range(min(len(ids),len(vals))):
            values[j].append((ids[i],float(vals[i])))
     print('<script>')
+    print('var lines=["'+'","'.join(texts)+'"];')
     print('const predictions={')
     for x in values.keys():
         print('"'+x+'"',':{',end='')
@@ -632,14 +667,18 @@ def writesvoutput(texts):
     functdef = """
     document.getElementById("score-show").innerHTML = "കുറഞ്ഞത് "+value+" % സാമ്യം";
     var output = "";
-    for (const [key1, value1] of Object.entries(predictions)) {
+    for (const key1 of lines) {
+        const value1 = predictions[key1];
 	    output = output+"<div class='entry-header'>"+key1+"</div>"+"";
+	    var items = Object.keys(value1).map(function(key) {return [key, value1[key]];});
+        items.sort(function(first, second) {return second[1] - first[1];});
 	    output = output+'<table>';
-	    for (const [key2, value2] of Object.entries(value1)) {
-		    if (value2>=value){
-			    output=output+"<tr><td>"+key2+"</td><td>"+value2+" %</td></tr>";
-		    }
+	    for (const entr of items){
+	        if (entr[1]>=value){
+	            output=output+'<tr class="pred_row"><td class="pred_col">'+entr[0]+'</td><td class="pred_col">'+entr[1]+' %</td></tr>';
+	        }
 	    }
+	    
 	    output = output+'</table>';
     }
     document.getElementById("svout").innerHTML = output;"""
@@ -651,10 +690,11 @@ def writesvoutput(texts):
     print(functdef)
     print('};')
     print('</script>')
-    print('<center><div class="border-box"><div id="score-show"></div><br>പ്രവചന കൃത്യത കുറച്ചു കുറഞ്ഞ സാമ്യമുള്ള കൂടുതൽ വൃത്തം കണ്ടെത്തുക <br><input type="range" min="50" max="100" value="90" class="slider" id="myRange" onchange="updateSlider()"></div><br><div id="svout"></div></center>')
+    print('<center><div class="border-box"><div id="score-show"></div><br>കൃത്യമായ സംസ്‌കൃത വൃത്തം കണ്ടെത്താനായില്ലെങ്കിൽ കൃത്യത കുറച്ച് ഏകദേശ സാമ്യം കണ്ടെത്താം <br><input type="range" min="50" max="100" value="90" class="slider" id="myRange" onchange="updateSlider()"></div><br><div id="svout"></div></center>')
     print(readyfunc)
 
 def writevtoutput(text,output):
+    print('<center><div id="page-sub-heading">വായ്‌ത്താരി  </div><br>(ത, ക, ധി, മി etc... = ലഘു, ധീം = ഗുരു)</center><br>')
     values = {"ധീം":1,"ത":1,"തക":2,"തകിട":3,"തകധിമി":4,"തകതകിട":5}    
     print('<table>')
     for lindex, line in enumerate(text):
@@ -700,6 +740,7 @@ def averagefind(lines):
     return (l1,l2,m1,m2)
     
 def writesmoutput(texts):
+    print('<center><div id="page-sub-heading">അപഗ്രഥനസംഗ്രഹം</div></center>')
     withchillu = [len(ml(i).syllables()) for i in texts]
     withnochillu = [len(ml(i).nochillu().syllables()) for i in texts]
     gurulaghu = ["".join(gl(i)).replace('-','') for i in texts]
@@ -718,17 +759,59 @@ def writesmoutput(texts):
     print('<tr><td>','ഒറ്റവരികളുടെ ശരാശരി മാത്ര', '</td><td>',m1,'</td>','</tr>')
     print('<tr><td>','ഇരട്ട വരികളുടെ ശരാശരി മാത്ര', '</td><td>',m2,'</td>','</tr>')
     print('</table></center>')
+    
+def writeexampleoutput():
+    scripttext = """
+    <script>
+    function copytext(val){
+            var value = "example_"+val;
+            var text = document.getElementById(value).innerHTML;
+            const form = document.createElement('form');
+            form.method = "POST";
+            form.action = "https://kavyanarthaki.in/cgi-bin/test.py";
+            const op = document.createElement('input');
+            op.type = 'hidden';op.name = "analysis";op.value = 'as';
+            const dt = document.createElement('input');
+            dt.type = 'hidden';dt.name = "data";dt.value = text;
+            form.appendChild(op);form.appendChild(dt);
+            document.body.appendChild(form);form.submit();
+            form.remove();
+        }
+    </script>
+    """
+    print(scripttext)
+    print('<center><div id="page-sub-heading">ഉദാഹരണങ്ങൾ<div></center>')
+    data = []
+    try:
+        with open('data/example.csv', 'r', encoding='utf-8') as csvfile:
+            csvreader = csv.reader(csvfile)
+            for row in csvfile:
+                data.append('<br>'.join([i for i in row.split(',')[1:] if not(i=="")]))
+    except Exception as e:
+        print(e)
+    print('<center><table border="1" class="sum_tble"><tr><th id="sum_tble">സൂചിക</th><th id="sum_tble">വരികൾ </th></tr>')
+    for i in range(len(data)):
+        print('<tr><td id="sum_tble">',str(i+1),'</td><td id="sum_tble"><div id="example_'+str(i+1)+'">',data[i],'</div></td><td><button onclick=copytext('+str(i+1)+')>പരിശോധിക്കുക</button></td></tr>')
+    print('</table></center>')
 
 # --------------------------------------------------------------------------
 
 titlebar = """
  <div class="page-header">
-                <img class="logo-image" src="http://kavyanarthaki.in/assets/Logo_of_University_of_Kerala.png" alt="UOK">
-                <div class="header-text">
-                <h1>കാവ്യനർത്തകി</h1>
-                <h3>(Based on kavyanarthaki Python Package for Malayalam Meters)</h3>
-                <h5>Developed by Machine Learning Team of Department of Computational Biology and Bioinformatics, University of Kerala.</h5>
-            </div></div>
+        <img class="logo-image" src="https://kavyanarthaki.in/assets/Logo_of_University_of_Kerala.png" alt="UOK">
+        <div class="header-text">
+            <h1>കാവ്യനർത്തകി</h1>
+            <h1 class="subheading">(Based on Kavyanarthaki Python package for Malayalam Meters)</h1>
+            <h3 class="subheading">Developed by Machine Learning Team of Dept of Computational Biology & Bioinformatics, University of Kerala.</h3>
+        </div>
+ </div>
+ <center>
+    <div class="menuitems">
+        <a href="https://colab.research.google.com/drive/1BXRAZ-E5SckC6094gU2XWFuXLxnbJbP7?usp=sharing"><img data-canonical-src="https://kavyanarthaki.in/assets/colab-badge.svg" alt="Open In Colab" src="https://kavyanarthaki.in/assets/colab-badge2.svg" width="234" height="40"></a>
+        <a href="https://www.google.com/intl/ml/inputtools/try/"><img data-canonical-src="https://kavyanarthaki.in/assets/google_inputtool_logo.png" alt="Open In Colab" src="https://kavyanarthaki.in/assets/google_inputtool_logo.png"  width="234" height="40"></a>
+        <img id="kavyaexamples" data-canonical-src="https://kavyanarthaki.in/assets/example_logo.png" alt="Open In Colab" src="https://kavyanarthaki.in/assets/example_logo.png"  width="234" height="40">
+    </div>
+</center>
 """
 print(titlebar)
 form = cgi.FieldStorage()
@@ -741,7 +824,7 @@ if form.getvalue("data"):
 else:
     text = False
     
-default_page = """
+default_page1 = """
 <script>
         function finddata(){
             var operation = 'gl';
@@ -762,7 +845,7 @@ default_page = """
             var text = document.getElementById('inputarea').value;
             const form = document.createElement('form');
             form.method = "POST";
-            form.action = "http://kavyanarthaki.in/cgi-bin/test.py";
+            form.action = "https://kavyanarthaki.in/cgi-bin/test.py";
             const op = document.createElement('input');
             op.type = 'hidden';op.name = "analysis";op.value = operation;
             const dt = document.createElement('input');
@@ -773,11 +856,15 @@ default_page = """
         }
         </script>
         <center>
-        <a href="https://colab.research.google.com/drive/1BXRAZ-E5SckC6094gU2XWFuXLxnbJbP7?usp=sharing"><img data-canonical-src="https://kavyanarthaki.in/assets/colab-badge.svg" alt="Open In Colab" src="https://kavyanarthaki.in/assets/colab-badge2.svg"></a>
-
             <div id="maincontainer">
-            <div class="card-mainpage">ഇവിടെ ഈരടി / വരികൾ എഴുതുക<br><textarea class="textbox" id="inputarea">അങ്കണ തൈമാവിൽ നിന്നാദ്യത്തെ പഴം വീഴ്കെ
-അമ്മതൻ നേത്രത്തിൽ നിന്നുതിർന്നൂ ചുടുകണ്ണീർ</textarea></div>
+            <div class="card-mainpage">അപഗ്രഥിക്കാനുള്ള ഈരടി / വരികൾ താഴെ ചതുരത്തിൽ ടൈപ്പ്  ചെയ്‌യുക / പേസ്റ്റ്  ചെയ്യുക.<br><textarea class="textbox" id= "inputarea">"""
+
+sampleeg ="""അങ്കണ തൈമാവിൽ നിന്നാദ്യത്തെ പഴം വീഴ്കെ
+അമ്മതൻ നേത്രത്തിൽ നിന്നുതിർന്നൂ ചുടുകണ്ണീർ"""
+
+default_page2 = """
+</textarea></div>
+            <br><br>എന്ത് അപഗ്രഥനമാണ് വേണ്ടത്?
             <br><input type=radio id="gl" value="gl" name="process" checked>
             <label for='gl'>ഗുരു ലഘു</label>
             <input type=radio id="bv" value="bv" name="process">
@@ -787,16 +874,18 @@ default_page = """
             <input type=radio id="vt" value="vt" name="process">
             <label for='vt'>വായ്ത്താരി </label>
             <input type=radio id="sm" value="sm" name="process">
-            <label for='sm'>സംഗ്രഹം</label>
+            <label for='sm'>അപഗ്രഥനസംഗ്രഹം</label></br>
             <button id="button1" onclick="finddata()">കണ്ടെത്തുക</button>
             </div>
         </center>
 
 """
 
+default_page = default_page1+sampleeg+default_page2
+
 if process:
     if text:
-        print('<button class="backbutton" onclick="history.back()">go back</button><div id="maincontainer">')
+        print('<div id="maincontainer">')
         if analysis=='bv':
             i = [j.rstrip() for j in data.replace('\r','\n').split('\n') if not(j.rstrip()=="")]
             x = predict()
@@ -821,14 +910,53 @@ if process:
         elif analysis=='sm':
             i = [j.rstrip() for j in data.replace('\r','\n').split('\n') if not(j.rstrip()=="")]
             writesmoutput(i)
+        elif analysis=='ex':
+            writeexampleoutput()
+        elif analysis=='as':
+            print(default_page1+data.replace('<br>','\n')+default_page2)
         else:
             pass
         print('</div>')
+        writelog([j.rstrip() for j in data.replace('\r','\n').split('\n') if not(j.rstrip()=="")])
     else:
         print(default_page)
         print('<script>alert("Input Error: Missing data :(");</script>')
 else:
     print(default_page)
+    
+
+postloadscripts = """
+<script>
+document.getElementById("kavyaexamples").onclick = function(){
+            const form = document.createElement('form');
+            form.method = "POST";
+            form.action = "https://kavyanarthaki.in/cgi-bin/test.py";
+            const op = document.createElement('input');
+            op.type = 'hidden';op.name = "analysis";op.value = 'ex';
+            const dt = document.createElement('input');
+            dt.type = 'hidden';dt.name = "data";dt.value = "ഉദാഹരണം";
+            form.appendChild(op);form.appendChild(dt);
+            document.body.appendChild(form);form.submit();
+            form.remove();
+        };
+</script>
+"""
+print(postloadscripts)
+    
+footer = """
+<footer>
+<div class="subfooter" id="subfooter1">
+<center><div class="subfooter2"><img src="https://kavyanarthaki.in/assets/logo_m.png" alt="Kavyanarthaki" width="100" height="100"></div></center>
+<div class="subfooter2"><button class="backbutton" onclick="history.back()">തിരിച്ചു  പോകാം</button></div></div>
+<div class="subfooter">
+<div class="aboutcard"><u>About</u><br>This website and associated code is maintained by machine learning team<br> of Dept of Computational Biology and Bio-informatics, University of Kerala</div>
+<div class="contactcard"><u>Contact details</u><br>For enquiry related to kavyanarthaki: <a href="mailto:neenumohan1998@gmail.com">neenumohan1998@gmail.com</a>, <a href="mailto:sankar.achuth@gmail.com">sankar.achuth@gmail.com</a><br>
+For technical related enquiries and suggetions: <a href="mailto:mpvinod625@gmail.com">mpvinod625@gmail.com</a></div>
+</div>
+<div class="subfooter">For background reading: 1. Article in Vijnana Kairali (2022),  2. Malayalam Meter- A modern Pedagogic Introduction (Forthcoming-2022), 3. Kavyanarthaki Package Documentation</div
+</footer>
+"""
+print(footer)
 
 print('</body></html>')
 

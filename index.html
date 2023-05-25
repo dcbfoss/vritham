@@ -1,10 +1,118 @@
-<html>
+<!DOCTYPE html>
+<html lang="ml">
     <head>
-        <title>കാവ്യനർത്തകി പ്രവർത്തനോദാഹരണം</title>
-        <meta http-equiv="refresh" content="0; url=https://colab.research.google.com/drive/1BXRAZ-E5SckC6094gU2XWFuXLxnbJbP7?usp=sharing" />
+    <title>കാവ്യനർത്തകി</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Website that aid study in analysing malayalam meters.">
+    <meta name="keywords" content="malayalam meters, malayalam, meters, analysis">
+    <meta name="author" content="Prof. Achuthsankar S Nair">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="height=device-height, initial-scale=1.0">
+    <link rel="stylesheet" href="https://kavyanarthaki.in/assets/kavya_style.css">
     </head>
     <body>
-        <a href="https://colab.research.google.com/drive/1BXRAZ-E5SckC6094gU2XWFuXLxnbJbP7?usp=sharing">Click Here</a>
-        
+        <script>
+        function finddata(){
+            var operation = 'gl';
+            if (document.getElementById('gl').checked){
+                operation = 'gl';
+            }else if (document.getElementById('bv').checked){
+                operation = 'bv';
+            }else if (document.getElementById('sv').checked){
+                operation = 'sv';
+            }else if (document.getElementById('vt').checked){
+                operation = 'vt';
+            }else if (document.getElementById('sm').checked){
+                operation = 'sm';
+            }else if (document.getElementById('mv').checked){
+                operation = 'mv';
+            }
+            else {
+                operation = 'gl';
+            }
+            var text = document.getElementById('inputarea').value;
+            const form = document.createElement('form');
+            form.method = "POST";
+            form.action = "https://kavyanarthaki.in/cgi-bin/index.cgi";
+            const op = document.createElement('input');
+            op.type = 'hidden';op.name = "analysis";op.value = operation;
+            const dt = document.createElement('input');
+            dt.type = 'hidden';dt.name = "data";dt.value = text;
+            form.appendChild(op);form.appendChild(dt);
+            document.body.appendChild(form);form.submit();
+            form.remove();
+        }
+        </script>
+        <div class="page-header">
+                <a href="https://kavyanarthaki.in/"><img class="logo-image" src="https://kavyanarthaki.in/assets/Logo_of_University_of_Kerala.png" alt="UOK"></a>
+                <div class="header-text">
+                <h1>കാവ്യനർത്തകി</h1>
+                <h2 class="subheading">(Based on Kavyanarthaki Python package for Malayalam Meters)</h2>
+                <h3 class="subheading">Developed by Machine Learning Team of Dept of Computational Biology & Bioinformatics, University of Kerala.</h3>
+            </div></div>
+        <center>
+    <div class="menuitems">
+        <a href="https://colab.research.google.com/drive/1BXRAZ-E5SckC6094gU2XWFuXLxnbJbP7?usp=sharing"><img data-canonical-src="https://kavyanarthaki.in/assets/colab-badge.svg" alt="Open In Colab" src="https://kavyanarthaki.in/assets/colab-badge2.svg" width="234" height="40"></a>
+        <a href="https://www.google.com/intl/ml/inputtools/try/"><img data-canonical-src="https://kavyanarthaki.in/assets/google_inputtool_logo.png" alt="Open In Colab" src="https://kavyanarthaki.in/assets/google_inputtool_logo.png"  width="234" height="40"></a>
+        <img id="kavyaexamples" data-canonical-src="https://kavyanarthaki.in/assets/example_logo.png" alt="Open In Colab" src="https://kavyanarthaki.in/assets/example_logo.png"  width="234" height="40">
+    </div>
+</center>
+        <center>
+            <div id="maincontainer">
+            <div class="card-mainpage">അപഗ്രഥിക്കാനുള്ള ഈരടി / വരികൾ താഴെ ചതുരത്തിൽ ടൈപ്പ്  ചെയ്‌യുക / പേസ്റ്റ്  ചെയ്യുക.<br>മുകളിലെ ഉദാഹരണങ്ങൾ എന്ന ബട്ടൺ അമർത്തിയാൽ നൂറോളം ഉദാഹരണങ്ങൾ പരിശോധിക്കാം.<br><textarea class="textbox" id="inputarea">അങ്കണ തൈമാവിൽ നിന്നാദ്യത്തെ പഴം വീഴ്കെ
+അമ്മതൻ നേത്രത്തിൽ നിന്നുതിർന്നൂ ചുടൂ കണ്ണീർ</textarea></div>
+            <br>എന്ത് അപഗ്രഥനമാണ് വേണ്ടത്?
+            <br><input type=radio id="bv" value="bv" name="process" checked>
+            <label for='bv'>ഭാഷാ വൃത്തം</label>
+            <input type=radio id="sv" value="sv" name="process">
+            <label for='sv'>സംസ്‌കൃത വൃത്തം</label>
+            <input type=radio id="mv" value="mv" name="process">
+            <label for='mv'>ഭാഷാ /സംസ്‌കൃത വൃത്തം</label>
+            <input type=radio id="vt" value="vt" name="process">
+            <label for='vt'>വായ്ത്താരി </label>
+            <input type=radio id="gl" value="gl" name="process">
+            <label for='gl'>ഗുരു ലഘു</label>
+            <input type=radio id="sm" value="sm" name="process">
+            <label for='sm'>അപഗ്രഥനസംഗ്രഹം</label><br>
+            <button id="button1" onclick="finddata()">അപഗ്രഥിക്കുക</button>
+            </div>
+        </center>
+    <script>
+            document.getElementById("kavyaexamples").onclick = function(){
+            const form = document.createElement('form');
+            form.method = "POST";
+            form.action = "https://kavyanarthaki.in/cgi-bin/index.cgi";
+            const op = document.createElement('input');
+            op.type = 'hidden';op.name = "analysis";op.value = 'ex';
+            const dt = document.createElement('input');
+            dt.type = 'hidden';dt.name = "data";dt.value = "ഉദാഹരണം";
+            form.appendChild(op);form.appendChild(dt);
+            document.body.appendChild(form);form.submit();
+            form.remove();
+        };
+</script>
+<footer>
+<div class="subfooter0" id="subfooter1">
+    <center>
+        <div class="subfooter2">
+            <img src="https://kavyanarthaki.in/assets/logo_m.png" alt="Kavyanarthaki" width="100" height="100">
+        </div>
+    </center>
+    <div class="subfooter2">
+        <button class="backbutton" onclick="history.back()">തിരിച്ചു  പോകാം</button>
+    </div>
+</div>
+<div class="subfooter">
+    <div class="aboutcard">
+        <u>About</u><br>This website and associated code is maintained by machine learning team of Dept of Computational Biology and Bio-informatics, University of Kerala. &nbsp;<a href="https://kavyanarthaki.in/cgi-bin/stats.cgi"> See Statistics.</a>
+    </div>
+    <div class="contactcard">
+        <u>Contact details</u><br>For enquiry related to kavyanarthaki: <a href="mailto:neenumohan1998@gmail.com">neenumohan1998@gmail.com</a>, <a href="mailto:sankar.achuth@gmail.com">sankar.achuth@gmail.com</a><br>
+        For technical related enquiries and suggestions: <a href="mailto:mpvinod625@gmail.com">mpvinod625@gmail.com</a>
+    </div>
+</div>
+<div class="subfooter0">For background reading: 1. Article in Vijnana Kairali (2022),  2. Malayalam Meter- A modern Pedagogic Introduction (Forthcoming-2022), 3. Kavyanarthaki Package Documentation</div
+</footer>
+
     </body>
 </html>
