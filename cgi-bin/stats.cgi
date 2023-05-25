@@ -8,7 +8,7 @@ sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 titlebar = """
  <div class="page-header">
-        <a href="https://kavyanarthaki.in/"><img class="logo-image" src="https://kavyanarthaki.in/assets/Logo_of_University_of_Kerala.png" alt="UOK"></a>
+        <a href="https://kavyanarthaki.in/"><img class="logo-image" src="https://vinodmp4.helioho.st/picture_library/Logo_of_University_of_Kerala.png" alt="UOK"></a>
         <div class="header-text">
             <h1>കാവ്യനർത്തകി</h1>
             <h2 class="subheading">(Based on Kavyanarthaki Python package for Malayalam Meters)</h2>
@@ -17,9 +17,9 @@ titlebar = """
  </div>
  <center>
     <div class="menuitems">
-        <a href="https://colab.research.google.com/drive/1BXRAZ-E5SckC6094gU2XWFuXLxnbJbP7?usp=sharing"><img data-canonical-src="https://kavyanarthaki.in/assets/colab-badge.svg" alt="Open In Colab" src="https://kavyanarthaki.in/assets/colab-badge2.svg" width="234" height="40"></a>
-        <a href="https://www.google.com/intl/ml/inputtools/try/"><img data-canonical-src="https://kavyanarthaki.in/assets/google_inputtool_logo.png" alt="Open In Colab" src="https://kavyanarthaki.in/assets/google_inputtool_logo.png"  width="234" height="40"></a>
-        <img id="kavyaexamples" data-canonical-src="https://kavyanarthaki.in/assets/example_logo.png" alt="Open In Colab" src="https://kavyanarthaki.in/assets/example_logo.png"  width="234" height="40">
+        <a href="https://colab.research.google.com/drive/1BXRAZ-E5SckC6094gU2XWFuXLxnbJbP7?usp=sharing"><img data-canonical-src="https://vinodmp4.helioho.st/picture_library/colab-badge.svg" alt="Open In Colab" src="https://vinodmp4.helioho.st/picture_library/colab-badge2.svg" width="234" height="40"></a>
+        <a href="https://www.google.com/intl/ml/inputtools/try/"><img data-canonical-src="https://vinodmp4.helioho.st/picture_library/google_inputtool_logo.png" alt="Open In Colab" src="https://vinodmp4.helioho.st/picture_library/google_inputtool_logo.png"  width="234" height="40"></a>
+        <img id="kavyaexamples" data-canonical-src="https://vinodmp4.helioho.st/picture_library/example_logo.png" alt="Open In Colab" src="https://vinodmp4.helioho.st/picture_library/example_logo.png"  width="234" height="40">
     </div>
 </center>
 """
@@ -28,7 +28,7 @@ postloadscripts = """
 document.getElementById("kavyaexamples").onclick = function(){
             const form = document.createElement('form');
             form.method = "POST";
-            form.action = "https://kavyanarthaki.in/cgi-bin/index.cgi";
+            form.action = "https://vinodmp4.helioho.st/cgi-bin/index.cgi";
             const op = document.createElement('input');
             op.type = 'hidden';op.name = "analysis";op.value = 'ex';
             const dt = document.createElement('input');
@@ -42,7 +42,7 @@ document.getElementById("kavyaexamples").onclick = function(){
 footer = """
 <footer>
 <div class="subfooter0" id="subfooter1">
-<center><div class="subfooter2"><img src="https://kavyanarthaki.in/assets/logo_m.png" alt="Kavyanarthaki" width="100" height="100"></div></center>
+<center><div class="subfooter2"><img src="https://vinodmp4.helioho.st/picture_library/logo_m.png" alt="Kavyanarthaki" width="100" height="100"></div></center>
 <div class="subfooter2"><button class="backbutton" onclick="history.back()">തിരിച്ചു  പോകാം</button></div></div>
 <div class="subfooter">
 <div class="aboutcard"><u>About</u><br>This website and associated code is maintained by machine learning team of Dept of Computational Biology and Bio-informatics, University of Kerala.&nbsp;<a href="https://kavyanarthaki.in/cgi-bin/stats.cgi">See Statistics.</a></div>
@@ -80,8 +80,8 @@ print('<meta name="description" content="Website that aid study in analysing mal
 print('<meta name="keywords" content="malayalam meters, malayalam, meters, analysis">')
 print('<meta name="author" content="Prof. Achuthsankar S Nair">')
 print('<meta name="viewport" content="width=device-width, initial-scale=1.0">')
-print('<link rel="icon" type="image/x-icon" href="https://kavyanarthaki.in/assets/logo.ico">')
-print('<link rel="stylesheet" href="https://kavyanarthaki.in/assets/kavya_style.css">')
+print('<link rel="icon" type="image/x-icon" href="https://vinodmp4.helioho.st/picture_library/logo.ico">')
+print('<link rel="stylesheet" href="https://vinodmp4.helioho.st/picture_library/kavya_style.css">')
 print('<title>കാവ്യനർത്തകി</title></head><body>')
 
 try:
